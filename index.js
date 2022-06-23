@@ -12,3 +12,6 @@ app.use(cookieParser());
 app.use(express.json());
 app.use('/api/admin', admin_router);
 app.use('/api/v1/users', user_router);
+app.get('/',(req,res)=>{
+    return res.status(200).json({message:"Welcome to the first version of the finall api"})
+})
