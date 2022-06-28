@@ -18,9 +18,14 @@
     "express": "^4.17.3",
     "joi": "^17.6.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.3.0"
+    "mongoose": "^6.3.0",
+    "pdf-parse": "^1.1.1",
+    "pdf2json": "^2.0.1",
+    "pdfjs-dist": "^2.14.305"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "exceljs": "^4.3.0",
+    "nodemon": "^2.0.16",
+    "xlsx": "^0.18.5"
   }
 }

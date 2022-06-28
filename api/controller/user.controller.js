@@ -17,9 +17,12 @@ async function createUser(req,res){
         return res.status(400).json({msg:error.details[0].message})
     }
     else{
-        user_exists = await Users.findOne({email: value.email})
-        if(user_exists){
+        email_exists = await Users.findOne({email: value.email})
+        username_exists = await Users.findOne({username:value.username})
+        if(email_exists){
             return res.status(400).json({"message":"email already exists"})
+        }else if(username_exists){
+            return res.status(400).json({"message":"username already exists"})
         }else{
             hashedPassword = await bcrypt.hash(value.password,salt);
             value.password = hashedPassword;
