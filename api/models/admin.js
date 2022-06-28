@@ -5,6 +5,7 @@ const adminSchema = new mongoose.Schema({
     lastname: String,
     email:{type:String, required:true, immutable:true},
     password:{type:String, required:true, select:false},
+    is_admin:{type:Boolean, default:true},
     is_super_admin:{type:Boolean, default:false},
     refreshToken:{type:String, default:'', select:false}
 },{

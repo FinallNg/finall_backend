@@ -24,8 +24,8 @@ async function createAdmin(req,res){
             hashedPassword = await bcrypt.hash(value.password,salt);
             value.password = hashedPassword;
             const admin = new Admins(value)
-            refreshToken = jwt.sign({id:admin.id, role:admin.role},process.env.REFRESH_TOKEN_SECRET, {expiresIn:'1d'})
-            accessToken = jwt.sign({id:admin.id, role:admin.role},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
+            refreshToken = jwt.sign({id:admin.id, is_admin:admin.is_admin},process.env.REFRESH_TOKEN_SECRET, {expiresIn:'1d'})
+            accessToken = jwt.sign({id:admin.id, is_admin:admin.is_admin},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
             admin.refreshToken = refreshToken
             admin.save()
             return res.cookie('jwt',refreshToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None', secure:true}).status(201).json({msg:"Admin Created Successfully", data:admin, "token":accessToken});
@@ -48,8 +48,8 @@ async function loginAdmin(req,res){
             if(!password){
                 return res.status(400).json({"message":"Invalid Credentials"})
             }else{
-                refreshToken = jwt.sign({id:admin_exists.id, role:admin_exists.role},process.env.REFRESH_TOKEN_SECRET, {expiresIn:'1d'})
-                accessToken = jwt.sign({id:admin_exists.id, role:admin_exists.role},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
+                refreshToken = jwt.sign({id:admin_exists.id, is_admin:admin_exists.is_admin},process.env.REFRESH_TOKEN_SECRET, {expiresIn:'1d'})
+                accessToken = jwt.sign({id:admin_exists.id, is_admin:admin_exists.is_admin},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
                 admin_exists.refreshToken = refreshToken
                 admin_exists.save()
                 return res.cookie('jwt',refreshToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None'}).status(200).json({"message":"Log In Successful", data:admin_exists, token:accessToken})
