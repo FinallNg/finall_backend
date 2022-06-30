@@ -18,11 +18,11 @@ exports.authorizeUser = async (req,res, next)=>{
 
 exports.authorizeAdmin = async (req,res, next)=>{
     try {
-        const cookie = req.cookies['jwt']
-        if(!cookie){
+        const token = req.headers['token']
+        if(!token){
             return res.status(403).json({msg:"Unauthorized, Sign In!"});
         }else{
-            const verified = await jwt.verify(cookie, process.env.REFRESH_TOKEN_SECRET)
+            const verified = await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
             if (!verified.is_admin){
                 return res.status(400).json({msg:"You don't have the required permission"})
             }else{
