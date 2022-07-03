@@ -5,13 +5,13 @@ exports.adminValidation = (admin)=>{
 
         username: Joi.string().min(3).max(50).required(),
 
-        firstname: Joi.string().min(3).max(50),
+        firstname: Joi.string().min(3).max(50).required(),
             
-        lastname: Joi.string().min(3).max(50),
+        lastname: Joi.string().min(3).max(50).required(),
 
         email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com'] } }),
     
-        password: Joi.string().required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
+        password: Joi.string().min(7).required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
 
         is_super_admin: Joi.boolean().default(false)
     
@@ -23,7 +23,7 @@ exports.loginValidation = (admin)=>{
     const loginSchema = Joi.object({
         email: Joi.string().required().email({ minDomainSegments: 2, tlds: { allow: ['com'] } }),
         
-        password: Joi.string().required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+        password: Joi.string().min(7).required().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
     });
     return loginSchema.validate(admin)
 }
