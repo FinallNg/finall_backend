@@ -149,4 +149,5 @@ async function deleteUser(req,res){
 }
 
 
+
 module.exports = {getAllUsers, createUser, loginUser, token_refresh, updatePassword, getUser, updateUser, deleteUser}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mono Connect Test</title>
+    <script type="application/javascript" src="https://connect.withmono.com/connect.js"></script>
+</head>
+<body>
+    <div className="p-5">
+        <p>Welcome to Mono Connect.</p>
+        <button id="launch-btn">Link a financial account</button>
+    </div>
+    <script type="application/javascript">
+        const copyToClipboard = text => {
+          const elm = document.createElement('textarea');
+          elm.value = text;
+          document.body.appendChild(elm);
+          elm.select();
+          document.execCommand('copy');
+          document.body.removeChild(elm);
+        };
+        var connect;
+        var config = {
+          key: "test_pk_wWVSgpgY5gztsxPxaCND",
+          onSuccess: function (response) {
+
+            console.log(JSON.stringify(response));
+            
+            const url = "http://localhost:4000/api/v1/users/62b208fab5e09b628baa2429/connect"
+            
+            const options = {
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify(response),
+              method:'POST'
+            }
+            
+            fetch(url,options)
+            .then(data=>{console.log(data, data.body)})
+            .catch(err=>{console.log(err)})
+          },
+          onClose: function () {
+            console.log('user closed the widget.')
+          }
+        };
+        connect = new Connect(config);
+        connect.setup();
+        var launch = document.getElementById('launch-btn');
+        launch.onclick = function (e) {
+          connect.open();
+        };
+      </script>
+    
+</body>
+</html>
