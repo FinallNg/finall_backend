@@ -98,17 +98,23 @@ async function transactions(req,res){
     options.path = `/accounts/${req.params.acc_id}/transactions`
     options.method = 'GET'
     let data = '';
-    const request = http.request(options, (response)=>{
-        response.on('data',(chunk)=>{data = data + chunk})
-        response.on('end',async()=>{
-            transactions = JSON.parse(data);
-            return res.status(200).json(transactions)
+    try {
+        const request = http.request(options, (response)=>{
+            response.on('data',(chunk)=>{data = data + chunk})
+            response.on('end',async()=>{
+                transactions = JSON.parse(data);
+                return res.status(200).json(transactions)
+            })
         })
-    })
-    request.on('error', (error)=>{
-        console.log(error);
-    })
-    request.end();
+        request.on('error', (error)=>{
+            console.log(error);
+        })
+        request.end();
+        
+    } catch (error) {
+        return res.status(500).json({msg:error})
+    }
+ 
 
 }
 
