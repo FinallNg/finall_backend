@@ -10,7 +10,10 @@ const user_router = require('./api/routes/user.routes');
 const product_router = require('./api/routes/product.routes');
 connectDatabase(app);
 
-app.use(cors());
+const corsOptions = {
+    origin:["https://finall-app-development.herokuapp.com", "https://finall-app.herokuapp.com"]
+}
+app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use('/api/admin',insight_router);
