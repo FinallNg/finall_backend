@@ -1,6 +1,6 @@
-const {accountSetup, transactions} = require('../utils/product_functions')
-const {BankAccount} = require('../models/bank')
-
+const {accountSetup, transactions} = require('../utils/product_functions');
+const {BankAccount} = require('../models/bank');
+const mongoose = require('mongoose');
 async function bankConnect(req, res){
     const {code} = req.body
     accountSetup(code,req,res)
@@ -24,7 +24,13 @@ async function getAccount(req,res){
 
 async function getTotalBalance(req,res){
     try {
-        const result = await BankAccount.aggregate([{$group:{_id:{user_id:req.params.id}, totalBalance:{$sum:"$accountBalance"}}}])
+        const id = mongoose.Types.ObjectId(req.params.id)
+        const result = await BankAccount.aggregate(
+            [
+                {$match:{user_id:id}},
+                {$group:{_id:"user_id", totalBalance:{$sum:"$accountBalance"}}}
+            ]
+        )
         totalBalance = result[0].totalBalance
         if (totalBalance){
             return res.status(200).json({totalBalance})
@@ -50,7 +56,44 @@ async function getBalance(req,res){
     }
 }
 
+async function getStatement(req,res){
+    let period = req.query.period;
+    let output = req.query.output;
+    if(!period){
+        return res.status(401).json({msg:"specify a period in your query"})
+    }
+    if(output){
+        options.path = `/accounts/${req.params.acc_id}/statement?period=${period}&output=${output}`
+    }else{
+        options.path = `/accounts/${req.params.acc_id}/statement?period=${period}`
+    }
+    
+    options.method = 'GET'
+    let data = '';
+    try{
+        const request = http.request(options, (response)=>{
+            response.on('data',(chunk)=>{data = data + chunk})
+            response.on('end', async()=>{
+                let statement = JSON.parse(data);
+                return res.status(200).json(statement)
+            })
+        })
+        request.on('error', (error)=>{
+            console.log(error);
+            return res.status(500).json({msg:error})
+        })
+        request.end();
+    }catch(error){
+        return res.status(500).json({msg:error})
+    }
+    
+}
 
+async function getCredits(req,res){}
+async function getDebits(req,res){}
+async function createBudget(req,res){}
+async function editBudget(req,res){}
+async function deleteBudget(req,res){}
 
 module.exports = {
     bankConnect, 
@@ -59,5 +102,9 @@ module.exports = {
     getTransaction, 
     getBalance,
     getAccounts,
-    getAccount
+    getAccount,
+    getStatement,
+    getCredits,
+    getDebits,
+    
 }

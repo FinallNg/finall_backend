@@ -95,15 +95,31 @@ async function storeBankDetails(req,res,details){
 
 
 async function transactions(req,res){
-    options.path = `/accounts/${req.params.acc_id}/transactions`
+    let currentPage = req.query.page==undefined ? 1 : Number(req.query.page)
+    let url,previousPage, nextPage, paging;
+    if(process.env.ENVIRONMENT=="production"){
+        url=process.env.URL + "/api/v1/users/"
+    }else if(process.env.ENVIRONMENT=="development"){
+        url=process.env.URL + "/api/v1/users/"
+    }
+    previousPage = currentPage-1==0 ? null : url + `${req.params.id}/accounts/${req.params.acc_id}/transactions` + "?page=" + `${currentPage-1}`
+    nextPage = url + `${req.params.id}/accounts/${req.params.acc_id}/transactions` + "?page=" + `${currentPage+1}`
+    
+    options.path = currentPage==1 ? `/accounts/${req.params.acc_id}/transactions` : `/accounts/${req.params.acc_id}/transactions?page=${currentPage}`
+    paging = {
+        page:currentPage,
+        previous:previousPage,
+        next:nextPage
+    }
     options.method = 'GET'
     let data = '';
     try {
         const request = http.request(options, (response)=>{
             response.on('data',(chunk)=>{data = data + chunk})
             response.on('end',async()=>{
-                transactions = JSON.parse(data);
-                return res.status(200).json(transactions)
+                let transactions = JSON.parse(data);
+                paging.total = transactions.paging.total
+                return res.status(200).json({paging:paging,data:transactions.data})
             })
         })
         request.on('error', (error)=>{
@@ -117,6 +133,7 @@ async function transactions(req,res){
  
 
 }
+
 
 module.exports = {
     accountSetup,
