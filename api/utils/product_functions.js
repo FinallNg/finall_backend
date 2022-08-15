@@ -119,6 +119,9 @@ async function transactions(req,res){
             response.on('end',async()=>{
                 let transactions = JSON.parse(data);
                 paging.total = transactions.paging.total
+                if (transactions.paging.next == null){
+                    paging.next=null
+                }
                 return res.status(200).json({paging:paging,data:transactions.data})
             })
         })
