@@ -1,6 +1,17 @@
+const http = require('https');
 const {accountSetup, transactions} = require('../utils/product_functions');
 const {BankAccount} = require('../models/bank');
 const mongoose = require('mongoose');
+const SEC = process.env.MONO_SEC
+const options = {
+    hostname: 'api.withmono.com',
+    headers: {
+      'Content-Type': 'application/json',
+      'mono-sec-key': SEC
+    },
+  };
+
+
 async function bankConnect(req, res){
     const {code} = req.body
     accountSetup(code,req,res)
@@ -89,11 +100,51 @@ async function getStatement(req,res){
     
 }
 
-async function getCredits(req,res){}
-async function getDebits(req,res){}
-async function createBudget(req,res){}
-async function editBudget(req,res){}
-async function deleteBudget(req,res){}
+async function getCredits(req,res){
+    options.path = `/accounts/${req.params.acc_id}/credits`
+    options.method = 'GET'
+    let data = '';
+    try {
+        const request = http.request(options, (response) => {
+            response.on('data', (chunk) => { data = data + chunk })
+            response.on('end', async () => {
+                let credits = JSON.parse(data);
+                // credits.history = JSON.parse(data).history.map((credit)=>{return credit.amount/100;});
+                return res.status(200).json(credits)
+            })
+        })
+        request.on('error', (error) => {
+            console.log(error);
+            return res.status(500).json({ msg: error })
+        })
+        request.end();
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ msg: error })
+    }
+}
+
+async function getDebits(req,res){
+    options.path = `/accounts/${req.params.acc_id}/debits`
+    options.method = 'GET'
+    let data = '';
+    try {
+        const request = http.request(options, (response) => {
+            response.on('data', (chunk) => { data = data + chunk })
+            response.on('end', async () => {
+                let debits = JSON.parse(data);
+                return res.status(200).json(debits)
+            })
+        })
+        request.on('error', (error) => {
+            console.log(error);
+            return res.status(500).json({ msg: error })
+        })
+        request.end();
+    } catch (error) {
+        return res.status(500).json({ msg: error })
+    }
+}
 
 module.exports = {
     bankConnect, 
@@ -105,6 +156,6 @@ module.exports = {
     getAccount,
     getStatement,
     getCredits,
-    getDebits,
+    getDebits
     
 }
