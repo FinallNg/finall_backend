@@ -27,8 +27,9 @@ async function createAdmin(req,res){
             refreshToken = jwt.sign({id:admin.id, is_admin:admin.is_admin},process.env.REFRESH_TOKEN_SECRET, {expiresIn:'1d'})
             accessToken = jwt.sign({id:admin.id, is_admin:admin.is_admin},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
             admin.refreshToken = refreshToken
+            admin.accessToken = accessToken
             admin.save()
-            return res.cookie('jwt',refreshToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None', secure:true}).status(201).json({msg:"Admin Created Successfully", data:admin, "token":accessToken});
+            return res.cookie('jwt',accessToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None', secure:true}).status(201).json({msg:"Admin Created Successfully", data:admin, "token":accessToken});
         }
     }
 }
@@ -51,8 +52,9 @@ async function loginAdmin(req,res){
                 refreshToken = jwt.sign({id:admin_exists.id, is_admin:admin_exists.is_admin},process.env.REFRESH_TOKEN_SECRET, {expiresIn:'1d'})
                 accessToken = jwt.sign({id:admin_exists.id, is_admin:admin_exists.is_admin},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
                 admin_exists.refreshToken = refreshToken
+                admin_exists.accessToken = accessToken
                 admin_exists.save()
-                return res.cookie('jwt',refreshToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None'}).status(200).json({"message":"Log In Successful", data:admin_exists, token:accessToken})
+                return res.cookie('jwt',accessToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None'}).status(200).json({"message":"Log In Successful", data:admin_exists, token:accessToken})
             }
             
         }
@@ -74,7 +76,7 @@ async function token_refresh(req,res){
         if(value.id!=admin.id){
             return res.status(400).json({"message":"Invalid Credentials"})
         }
-        accessToken = jwt.sign({id:admin.id, is_super_admin:admin.is_super_admin},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
+        accessToken = jwt.sign({id:admin.id, is_admin:admin.is_admin},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
         return res.status(200).json({token:accessToken});
     }
 }
@@ -146,5 +148,9 @@ async function deleteAdmin(req,res){
     })
 }
 
+async function logOut(req,res){
+    res.clearCookie('jwt');
+    return res.status(200).json({msg:"Log Out Successful"});
+}
 
-module.exports = {getAllAdmins, createAdmin, loginAdmin, token_refresh, updatePassword, getAdmin, updateAdmin, deleteAdmin}
+module.exports = {getAllAdmins, createAdmin, loginAdmin, token_refresh, updatePassword, getAdmin, updateAdmin, deleteAdmin, logOut}

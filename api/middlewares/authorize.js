@@ -1,16 +1,25 @@
 const jwt = require('jsonwebtoken');
+const {Users} = require('../models/users');
+const {Admins} = require('../models/admin');
+
 exports.authorizeUser = async (req,res, next)=>{
     try {
-        const cookie = req.cookies['jwt']
-        if(!cookie){
-            return res.status(403).json({msg:"Unauthorized, Sign In!"});
+        const token = req.cookies['jwt'] || req.headers?.authorization?.split(' ')[1]
+        if(!token || undefined){
+            return res.status(401).json({msg:"Unauthorized, Sign In!"});
         }else{
-            const verified = await jwt.verify(cookie, process.env.REFRESH_TOKEN_SECRET)
-            req.user = verified;
-            next();
+            const verified = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+            const user = await Users.findById(verified.id);
+            if(!user){
+                return res.status(403).json({msg:"Invalid Token"})
+            }else{
+                req.user = verified;
+                next();
+            }
         }   
     } catch (error) {
-        return res.status(403).json({success:false, msg:"Acess denied, Sign In!"})
+        console.error(error)
+        return res.status(500).json({success:false, msg:"An Error Occured"})
     }
     
 }
@@ -18,20 +27,22 @@ exports.authorizeUser = async (req,res, next)=>{
 
 exports.authorizeAdmin = async (req,res, next)=>{
     try {
-        const token = req.headers['token']
-        if(!token){
-            return res.status(403).json({msg:"Unauthorized, Sign In!"});
+        const token = req.cookies['jwt'] || req.headers?.authorization?.split(' ')[1]
+        if(!token || undefined){
+            return res.status(401).json({msg:"Unauthorized, Sign In!"});
         }else{
-            const verified = await jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+            const verified = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
             if (!verified.is_admin){
                 return res.status(400).json({msg:"You don't have the required permission"})
             }else{
                 req.user = verified;
+                console.log(req.user)
                 next();
             }
             
-        }   
+        }
     } catch (error) {
+        console.error(error)
         return res.status(500).json({success:false, msg:"An Unknown Error Occured!"})
     }
     

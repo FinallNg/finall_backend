@@ -30,8 +30,9 @@ async function createUser(req,res){
             refreshToken = jwt.sign({id:user.id, role:user.role},process.env.REFRESH_TOKEN_SECRET, {expiresIn:'1d'})
             accessToken = jwt.sign({id:user.id, role:user.role},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
             user.refreshToken = refreshToken
+            user.accessToken = accessToken
             user.save()
-            return res.cookie('jwt',refreshToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None', secure:true}).status(201).json({msg:"User Created Successfully", data:user, "token":accessToken});
+            return res.cookie('jwt',accessToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None', secure:true}).status(201).json({msg:"User Created Successfully", data:user});
         }
     }
 }
@@ -54,8 +55,9 @@ async function loginUser(req,res){
                 refreshToken = jwt.sign({id:user_exists.id, role:user_exists.role},process.env.REFRESH_TOKEN_SECRET, {expiresIn:'1d'})
                 accessToken = jwt.sign({id:user_exists.id, role:user_exists.role},process.env.ACCESS_TOKEN_SECRET, {expiresIn:'15m'})
                 user_exists.refreshToken = refreshToken
+                user_exists.accessToken = accessToken
                 user_exists.save()
-                return res.cookie('jwt',refreshToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None'}).status(200).json({"message":"Log In Successful", data:user_exists, token:accessToken})
+                return res.cookie('jwt',accessToken, {httpOnly:true, maxAge:24*60*60*1000, sameSite:'None'}).status(200).json({"message":"Log In Successful", data:user_exists})
             }
             
         }
@@ -148,6 +150,10 @@ async function deleteUser(req,res){
     })
 }
 
+async function logOut(req,res){
+    res.clearCookie('jwt');
+    return res.status(200).json({msg:"Log Out Successful"});
+}
 
 
-module.exports = {getAllUsers, createUser, loginUser, token_refresh, updatePassword, getUser, updateUser, deleteUser}
+module.exports = {getAllUsers, createUser, loginUser, token_refresh, updatePassword, getUser, updateUser, deleteUser, logOut}

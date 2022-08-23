@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
     password:{type:String, required:true, select:false},
     free:{type:Boolean, default:true},
     premium:{type:Boolean, default:false},
-    refreshToken:{type:String, default:'', select:false}
+    refreshToken:{type:String, default:'', select:false},
+    accessToken:{type:String, default:'', select:false}
 },{
     timestamps:true
 })
