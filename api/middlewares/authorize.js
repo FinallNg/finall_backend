@@ -36,7 +36,6 @@ exports.authorizeAdmin = async (req,res, next)=>{
                 return res.status(400).json({msg:"You don't have the required permission"})
             }else{
                 req.user = verified;
-                console.log(req.user)
                 next();
             }
             

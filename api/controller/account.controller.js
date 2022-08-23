@@ -18,7 +18,7 @@ async function bankConnect(req, res){
     
 }
 async function getAccounts(req,res){
-    const accounts = await BankAccount.find({user_id:req.params.id}).select('-_id')
+    const accounts = await BankAccount.find({user_id:req.params.id}).select('-_id').sort({createdAt:"desc"})
     if(accounts){
         return res.status(200).json(accounts)
     }

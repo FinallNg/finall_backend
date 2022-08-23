@@ -41,7 +41,7 @@ async function getBudgets(req,res){
         if(!user){
             return res.status(404).json({msg:"User not found"});
         }else{
-            const budgets = await Budget.find({user_id:req.params.id})
+            const budgets = await Budget.find({user_id:req.params.id}).sort({createdAt:"desc"})
             return res.status(200).json(budgets)
         }
     } catch (error) {

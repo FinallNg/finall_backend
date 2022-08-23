@@ -6,7 +6,7 @@ require('dotenv').config()
 const salt = parseInt(process.env.SALT);
 
 async function getAllUsers(req,res){
-    const users= await Users.find()
+    const users= await Users.find().sort({createdAt:"desc"})
     return res.status(200).json(users)
 }
 
