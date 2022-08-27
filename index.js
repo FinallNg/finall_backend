@@ -12,7 +12,7 @@ const budget_router = require('./api/routes/budget.routes')
 connectDatabase(app);
 
 const corsOptions = {
-    origin:["https://finall-app-development.herokuapp.com", "https://finall-app.herokuapp.com"]
+    origin:"*" //["https://finall-app-development.herokuapp.com", "https://finall-app.herokuapp.com"]
 }
 app.use(cors(corsOptions));
 app.use(cookieParser());
