@@ -130,6 +130,8 @@ async function getUser(req,res){
 async function updateUser(req,res){
     data = req.body
     delete data.password
+    delete data.premium
+    delete data.free
     Users.findByIdAndUpdate(req.params.id,data,{new:true}, (err, data)=>{
         if(err){
             console.log(err)

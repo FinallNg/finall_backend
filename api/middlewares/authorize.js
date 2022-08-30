@@ -14,6 +14,7 @@ exports.authorizeUser = async (req,res, next)=>{
                 return res.status(403).json({msg:"Invalid Token"})
             }else{
                 req.user = verified;
+                if(req.params.id != verified.id) return res.status(403).json({msg:"Unauthorized"})
                 next();
             }
         }   
