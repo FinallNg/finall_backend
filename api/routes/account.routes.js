@@ -4,15 +4,15 @@ const {bankConnect, getTotalBalance, getTransactions, getTransaction, getBalance
 getCredits, getDebits} = require('../controller/account.controller');
 
 // router.use(authorizeUser)
-router.post('/:id/connect', bankConnect)
-router.get('/:id/accounts', getAccounts)
-router.get('/:id/accounts/totalbalance', getTotalBalance)
-router.get('/:id/accounts/:acc_id', getAccount)
-router.get('/:id/accounts/:acc_id/transactions', getTransactions)
-router.get('/:id/accounts/:acc_id/transactions/:trans_id', getTransaction)
-router.get('/:id/accounts/:acc_id/balance', getBalance)
-router.get('/:id/accounts/:acc_id/statement', getStatement)
-router.get('/:id/accounts/:acc_id/credits', getCredits)
-router.get('/:id/accounts/:acc_id/debits', getDebits)
+router.post('/:id/connect',authorizeUser, bankConnect)
+router.get('/:id/accounts', authorizeUser, getAccounts)
+router.get('/:id/accounts/totalbalance', authorizeUser, getTotalBalance)
+router.get('/:id/accounts/:acc_id', authorizeUser, getAccount)
+router.get('/:id/accounts/:acc_id/transactions', authorizeUser, getTransactions)
+router.get('/:id/accounts/:acc_id/transactions/:trans_id',authorizeUser, getTransaction)
+router.get('/:id/accounts/:acc_id/balance',authorizeUser, getBalance)
+router.get('/:id/accounts/:acc_id/statement', authorizeUser, getStatement)
+router.get('/:id/accounts/:acc_id/credits', authorizeUser, getCredits)
+router.get('/:id/accounts/:acc_id/debits', authorizeUser, getDebits)
 
 module.exports = router
